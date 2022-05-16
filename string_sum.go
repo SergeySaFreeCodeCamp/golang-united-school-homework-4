@@ -2,6 +2,9 @@ package string_sum
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 )
 
 //use these errors as appropriate, wrapping them with fmt.Errorf function
@@ -23,5 +26,48 @@ var (
 // Use the errors defined above as described, again wrapping into fmt.Errorf
 
 func StringSum(input string) (output string, err error) {
-	return "", nil
+	if len(strings.Fields(input)) == 0 {
+		return "", fmt.Errorf("input string is empty(contains not character, but whitespace): %w", errorEmptyInput)
+	}
+
+	str :=
+		// 8. remove leading "+" in order not to make unnecessary splitting
+		strings.TrimLeft(
+			// 7. replace "-" with "+-" to further split the input string by "+" sign
+			strings.ReplaceAll(
+				// 6. replace duplicate "++" with "+"
+				strings.ReplaceAll(
+					// 5. replace "+-" with "-"
+					strings.ReplaceAll(
+						// 4. replace "-+" with "-"
+						strings.ReplaceAll(
+							// 3. replace duplicate "--" with "+"
+							strings.ReplaceAll(
+								// 2. remove all remaining spaces inside the input string
+								strings.ReplaceAll(
+									// 1. remove all leading and trailing white space
+									strings.TrimSpace(input),
+									" ", ""),
+								"--", "+"),
+							"-+", "-"),
+						"+-", "-"),
+					"++", "+"),
+				"-", "+-"),
+			"+")
+
+	operands := strings.Split(str, "+")
+
+	if len(operands) > 2 {
+		return "", fmt.Errorf("an expression contains one or greater than two operands: %w", errorNotTwoOperands)
+	}
+
+	res := 0
+	for i := 0; i < len(operands); i++ {
+		d, e := strconv.Atoi(operands[i])
+		if e != nil {
+			return "", fmt.Errorf("the input expression is not valid(contains characters, that are not numbers, +, - or whitespace): %w", e)
+		}
+		res += d
+	}
+	return fmt.Sprint(res), nil
 }
