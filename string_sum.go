@@ -57,7 +57,7 @@ func StringSum(input string) (output string, err error) {
 
 	operands := strings.Split(str, "+")
 
-	if len(operands) > 2 {
+	if len(operands) == 1 || len(operands) > 2 {
 		return "", fmt.Errorf("an expression contains one or greater than two operands: %w", errorNotTwoOperands)
 	}
 
